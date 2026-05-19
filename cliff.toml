@@ -2,7 +2,11 @@
 header = ""
 body = """
 {%- if version %}
-## {{ version }} ({{ timestamp | date(format="%Y-%m-%d") }})
+{%- if previous and previous.version %}
+## [{{ version }}]({{ self::remote_url() }}/compare/{{ previous.version }}...{{ version }}) ({{ timestamp | date(format="%Y-%m-%d") }})
+{%- else %}
+## [{{ version }}]({{ self::remote_url() }}/releases/tag/{{ version }}) ({{ timestamp | date(format="%Y-%m-%d") }})
+{%- endif %}
 {%- else %}
 ## Unreleased
 {%- endif %}
