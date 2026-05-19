@@ -1,6 +1,5 @@
 {
   "name": "snapr",
-  "version": "0.1.0",
   "private": true,
   "description": "A flexible backup service with web interface",
   "homepage": "https://github.com/maximseshuk/snapr",
