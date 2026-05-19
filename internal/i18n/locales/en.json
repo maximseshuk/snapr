@@ -1,0 +1,11 @@
+{
+  "error.job_not_found": "Job not found",
+  "error.job_already_running": "Job is already running",
+  "error.job_cancel_failed": "Failed to cancel job",
+  "error.backups_retrieval": "Error retrieving backups",
+  "error.backup_not_found": "Backup file not found",
+  "error.invalid_credentials": "Invalid username or password",
+  "error.unauthorized": "Unauthorized",
+  "error.manual_run_disabled": "Manual job execution is disabled",
+  "error.download_disabled": "Backup download is disabled"
+}

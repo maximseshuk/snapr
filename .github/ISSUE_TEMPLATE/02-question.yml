@@ -1,0 +1,36 @@
+name: Question / Help
+description: Ask a question or get help with snapr
+title: '[Question]: '
+labels: ['question']
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before you ask, please check the [docs](https://snapr.seshuk.im/) and [open issues](https://github.com/maximseshuk/snapr/issues).
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your question
+      description: What do you need help with?
+      placeholder: |
+        Tell us:
+        - What you are trying to do
+        - What is not working
+        - What you tried already
+        - Any error you see
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-config
+    attributes:
+      label: Your snapr.yaml (if it helps)
+      description: Paste the part that matters. Hide passwords.
+      placeholder: |
+        jobs:
+          - name: my-job
+            ...
+      render: yaml

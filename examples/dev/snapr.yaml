@@ -1,0 +1,175 @@
+logs:
+  path: './examples/dev/logs'
+  system: true
+  perJob: true
+  maxSizeMB: 50
+  maxBackups: 3
+  maxAgeDays: 7
+  compress: true
+
+server:
+  enabled: true
+  address: '0.0.0.0:47100'
+  secret: 'dev-jwt-secret-change-me'
+  auth:
+    enabled: true
+    username: 'admin'
+    password: 'admin'
+    tokenExpiration: 60
+  permissions:
+    allowBackupDownload: true
+    allowManualRun: true
+    showConfig: true
+  ui:
+    enabled: true
+
+jobs:
+  - name: 'files-to-s3'
+    schedule: '0 2 * * *'
+    compression: 'tar.gz'
+    sources:
+      - type: 'local'
+        path: './examples/dev/data'
+        excludes:
+          - '*.tmp'
+          - '*.log'
+    storages:
+      - name: 'minio-files'
+        type: 's3'
+        bucket: 'backups'
+        region: 'us-east-1'
+        accessKeyId: 'minioadmin'
+        secretAccessKey: 'minioadmin'
+        path: 'local-backup'
+        endpoint: 'http://localhost:47103'
+        storageClass: 'STANDARD'
+    retention:
+      last: 7
+
+  - name: 'database-snapshot'
+    schedule: '0 3 * * *'
+    compression: 'tar.gz'
+    sources:
+      - type: 'postgresql'
+        host: 'localhost'
+        port: 47102
+        username: 'postgres'
+        password: 'postgres'
+        database: 'testdb'
+        excludeTables:
+          - 'temp_table'
+    storages:
+      - name: 'local-disk'
+        type: 'local'
+        path: './examples/dev/backups'
+      - name: 'minio-postgres'
+        type: 's3'
+        bucket: 'backups'
+        region: 'us-east-1'
+        accessKeyId: 'minioadmin'
+        secretAccessKey: 'minioadmin'
+        path: 'postgres'
+        endpoint: 'http://localhost:47103'
+        storageClass: 'STANDARD'
+    retention:
+      last: 30
+    encryption:
+      type: 'openssl'
+      cipher: 'aes-256-cbc'
+      password: 'dev-backup-encryption-pass'
+    notifiers:
+      - name: 'ops-webhook'
+        type: 'webhook'
+        url: 'https://hooks.example.com/services/T0/B0/abc123secret'
+        method: 'POST'
+        headers:
+          Authorization: 'Bearer dev-token'
+        onSuccess: true
+        onFailure: true
+      - name: 'oncall-tg'
+        type: 'telegram'
+        botToken: '7891234567:AAEdev-bot-token-placeholder'
+        chatId: '-1001234567890'
+        onSuccess: false
+        onFailure: true
+
+  - name: 'files-to-sftp'
+    schedule: '0 4 * * *'
+    compression: 'tar.gz'
+    sources:
+      - type: 'local'
+        path: './examples/dev/data'
+    storages:
+      - name: 'sftp-server'
+        type: 'sftp'
+        host: 'localhost'
+        port: 47105
+        username: 'backup'
+        password: 'backup'
+        path: '/upload'
+        strictHostKey: false
+    retention:
+      last: 7
+    notifiers:
+      - name: 'mail-team'
+        type: 'email'
+        smtpHost: 'smtp.example.com'
+        smtpPort: 587
+        smtpUser: 'alerts@example.com'
+        smtpPass: 'dev-smtp-password'
+        from: 'alerts@example.com'
+        to:
+          - 'devops@example.com'
+          - 'sre@example.com'
+        useTLS: false
+        onSuccess: true
+        onFailure: true
+
+  - name: 'files-to-webdav'
+    schedule: '0 5 * * *'
+    compression: 'tar.zst'
+    sources:
+      - type: 'local'
+        path: './examples/dev/data'
+    storages:
+      - name: 'webdav-server'
+        type: 'webdav'
+        url: 'http://localhost:47106'
+        username: 'backup'
+        password: 'backup'
+        path: 'snapr'
+    retention:
+      last: 7
+    encryption:
+      type: 'openssl'
+      cipher: 'aes-256-cbc'
+      password: 'dev-backup-encryption-pass'
+
+  - name: 'large-archive-split'
+    schedule: '0 6 * * *'
+    compression: 'tar'
+    beforeScript: |
+      mkdir -p ./examples/dev/large-data
+      dd if=/dev/urandom of=./examples/dev/large-data/payload.bin bs=1M count=50 2>/dev/null
+    afterScript: |
+      rm -rf ./examples/dev/large-data
+    sources:
+      - type: 'local'
+        path: './examples/dev/large-data'
+    storages:
+      - name: 'local-disk'
+        type: 'local'
+        path: './examples/dev/backups'
+      - name: 'minio-split'
+        type: 's3'
+        bucket: 'backups'
+        region: 'us-east-1'
+        accessKeyId: 'minioadmin'
+        secretAccessKey: 'minioadmin'
+        path: 'split'
+        endpoint: 'http://localhost:47103'
+        storageClass: 'STANDARD'
+    retention:
+      last: 3
+    split:
+      chunkSize: '10MB'

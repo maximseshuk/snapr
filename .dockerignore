@@ -1,0 +1,73 @@
+# git
+.git/
+.gitattributes
+.gitignore
+
+# go
+/bin/
+*.test
+coverage.out
+
+# node
+node_modules/
+web/node_modules/
+web/dist/
+web/.vite/
+docs/node_modules/
+docs/doc_build/
+.pnpm-debug.log*
+
+# goreleaser
+dist/
+
+# env
+.env
+.env.*
+
+# editors
+.idea/
+.vscode/
+
+# os
+.DS_Store
+Thumbs.db
+
+# logs / tmp
+*.log
+logs/
+*.tmp
+tmp/
+
+# runtime backups
+examples/*/backups/
+backups/
+*.tar.gz
+*.zip
+
+# local overrides
+*.local.yaml
+*.local.yml
+docker-compose.override.yml
+
+# docker
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# docs
+README.md
+*.md
+docs/
+
+# agent tooling
+.claude/
+.cursor/
+.agents/
+.mcp.json
+skills-lock.json
+
+# deployment / examples
+.helm/
+.github/
+werf.yaml
+examples/

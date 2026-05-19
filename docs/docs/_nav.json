@@ -1,0 +1,20 @@
+[
+  {
+    "text": "Documentation",
+    "link": "/",
+    "activeMatch": "^/(?!api|.*github)"
+  },
+  {
+    "text": "API",
+    "link": "/api/",
+    "activeMatch": "^/api/"
+  },
+  {
+    "text": "Releases",
+    "link": "https://github.com/maximseshuk/snapr/releases"
+  },
+  {
+    "text": "GitHub",
+    "link": "https://github.com/maximseshuk/snapr"
+  }
+]

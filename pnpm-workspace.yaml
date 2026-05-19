@@ -1,0 +1,22 @@
+packages:
+  - web
+  - docs
+
+allowBuilds:
+  '@goreleaser/goreleaser': true
+  '@parcel/watcher': true
+  msw: true
+
+catalog:
+  '@fontsource-variable/geist': ^5.2.9
+  '@fontsource-variable/geist-mono': ^5.2.8
+  '@types/node': ^25.9.0
+  '@types/react': ^19.2.14
+  '@types/react-dom': ^19.2.3
+  react: 19.2.6
+  react-dom: 19.2.6
+  typescript: ~6.0.3
+
+overrides:
+  react: 19.2.6
+  react-dom: 19.2.6

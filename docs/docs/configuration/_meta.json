@@ -1,0 +1,32 @@
+[
+  "index",
+  "logs",
+  {
+    "type": "dir",
+    "name": "server",
+    "label": "Server",
+    "collapsed": true
+  },
+  "jobs",
+  {
+    "type": "dir",
+    "name": "sources",
+    "label": "Sources",
+    "collapsed": true
+  },
+  {
+    "type": "dir",
+    "name": "storages",
+    "label": "Storages",
+    "collapsed": true
+  },
+  "encryption",
+  "splitter",
+  {
+    "type": "dir",
+    "name": "notifiers",
+    "label": "Notifiers",
+    "collapsed": true
+  },
+  "full-example"
+]

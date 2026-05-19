@@ -1,0 +1,88 @@
+name: Feature Request
+description: Suggest a new feature or improvement
+title: '[Feature]: '
+labels: ['enhancement', 'needs-triage']
+assignees: []
+
+body:
+  - type: checkboxes
+    id: prerequisites
+    attributes:
+      label: Before you start
+      options:
+        - label: I searched the issues and did not find a duplicate
+          required: true
+        - label: I checked the [docs](https://snapr.seshuk.im/) — this feature does not exist yet
+          required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: What part of snapr is this about?
+      options:
+        - New source
+        - New storage
+        - Compression / encryption
+        - Notifier
+        - Web UI
+        - REST API
+        - Scheduling / retention
+        - Configuration
+        - Docs
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What do you want?
+      description: What feature you want, and why it would help.
+      placeholder: |
+        - What problem does this solve?
+        - How should it work?
+        - What would the config look like?
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Your use case
+      description: Tell us how you would use this.
+      placeholder: |
+        - What are you backing up?
+        - What storage are you using?
+        - Any workaround you use today?
+    validations:
+      required: true
+
+  - type: textarea
+    id: config-example
+    attributes:
+      label: Example config (optional)
+      description: If this needs config changes, show what it could look like.
+      placeholder: |
+        jobs:
+          - name: my-job
+            sources:
+              - type: new-source-type
+                # the new options here
+      render: yaml
+
+  - type: checkboxes
+    id: implementation
+    attributes:
+      label: Can you help build it?
+      options:
+        - label: I can open a pull request for this
+        - label: I can help test it
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Anything else? (optional)
+      placeholder: |
+        - Other ideas you thought about
+        - Links to similar features elsewhere
+        - Screenshots

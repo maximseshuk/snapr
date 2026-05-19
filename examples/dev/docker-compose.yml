@@ -1,0 +1,78 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: snapr-dev-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: testdb
+    ports:
+      - '47102:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  minio:
+    image: minio/minio:latest
+    container_name: snapr-dev-minio
+    command: server /data --console-address ':9001'
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - '47103:9000'
+      - '47104:9001'
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test: ['CMD', 'mc', 'ready', 'local']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  minio-init:
+    image: minio/mc:latest
+    container_name: snapr-dev-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 minioadmin minioadmin;
+      mc mb --ignore-existing local/backups;
+      mc anonymous set download local/backups;
+      exit 0;
+      "
+
+  sftp:
+    image: atmoz/sftp:alpine
+    container_name: snapr-dev-sftp
+    # user:pass:uid:gid:upload-dir
+    command: backup:backup:1001:1001:upload
+    ports:
+      - '47105:22'
+    volumes:
+      - sftp-data:/home/backup
+
+  webdav:
+    image: bytemark/webdav:latest
+    container_name: snapr-dev-webdav
+    environment:
+      AUTH_TYPE: Basic
+      USERNAME: backup
+      PASSWORD: backup
+    ports:
+      - '47106:80'
+    volumes:
+      - webdav-data:/var/lib/dav
+
+volumes:
+  postgres-data:
+  minio-data:
+  sftp-data:
+  webdav-data:

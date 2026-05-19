@@ -1,0 +1,73 @@
+{
+  "name": "snapr",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A flexible backup service with web interface",
+  "homepage": "https://github.com/maximseshuk/snapr",
+  "bugs": {
+    "url": "https://github.com/maximseshuk/snapr/issues"
+  },
+  "license": "MIT",
+  "author": "Maxim Seshuk",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maximseshuk/snapr.git"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -n \"API,WEB\" -c \"blue,magenta\" \"pnpm run dev:api\" \"pnpm run dev:web\"",
+    "dev:api": "go run ./cmd/snapr -config ./examples/dev/snapr.yaml",
+    "dev:web": "pnpm --filter web dev",
+    "build": "pnpm run build:web && go build -o bin/snapr ./cmd/snapr",
+    "build:web": "pnpm --filter web build",
+    "build:go": "go build -o bin/snapr ./cmd/snapr",
+    "stack:up": "docker compose -f examples/dev/docker-compose.yml up -d",
+    "stack:down": "docker compose -f examples/dev/docker-compose.yml down",
+    "stack:reset": "docker compose -f examples/dev/docker-compose.yml down -v",
+    "stack:logs": "docker compose -f examples/dev/docker-compose.yml logs -f",
+    "docs:dev": "pnpm --filter docs dev",
+    "docs:build": "pnpm --filter docs build",
+    "docs:preview": "pnpm --filter docs preview",
+    "test": "go test ./...",
+    "test:race": "go test -race ./...",
+    "test:cover": "go test -cover ./...",
+    "test:cover:html": "go test -coverprofile=coverage.out ./... && go tool cover -html=coverage.out -o coverage.html",
+    "format": "pnpm run format:web && pnpm run format:go",
+    "format:check": "pnpm run format:web:check && pnpm run format:go:check",
+    "format:web": "oxfmt",
+    "format:web:check": "oxfmt --check",
+    "format:go": "gofmt -w .",
+    "format:go:check": "test -z \"$(gofmt -l .)\"",
+    "lint": "pnpm run lint:web && pnpm run lint:go",
+    "lint:fix": "pnpm run lint:web:fix && pnpm run lint:go:fix",
+    "lint:web": "oxlint",
+    "lint:web:fix": "oxlint --fix",
+    "lint:go": "go vet ./... && go tool golangci-lint run ./...",
+    "lint:go:fix": "go tool golangci-lint run --fix ./...",
+    "clean": "rm -rf bin web/dist docs/doc_build coverage.out coverage.html && pnpm -r exec rm -rf node_modules && rm -rf node_modules",
+    "changelog": "git-cliff --latest",
+    "changelog:unreleased": "git-cliff --unreleased",
+    "changelog:full": "git-cliff",
+    "release:snapshot": "goreleaser release --snapshot --clean"
+  },
+  "devDependencies": {
+    "@goreleaser/goreleaser": "^2.15.4",
+    "concurrently": "^9.2.1",
+    "git-cliff": "^2.13.1",
+    "oxfmt": "^0.47.0",
+    "oxlint": "^1.65.0",
+    "shadcn": "^4.7.0"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "10.18.0",
+      "onFail": "warning"
+    },
+    "runtime": {
+      "name": "node",
+      "version": ">=22.0.0",
+      "onFail": "error"
+    }
+  }
+}

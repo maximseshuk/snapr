@@ -1,0 +1,15 @@
+[
+  { "type": "section-header", "label": "Getting Started" },
+  "index",
+  "quick-start",
+  {
+    "type": "dir-section-header",
+    "name": "configuration",
+    "label": "Configuration"
+  },
+  {
+    "type": "dir-section-header",
+    "name": "deployment",
+    "label": "Deployment"
+  }
+]

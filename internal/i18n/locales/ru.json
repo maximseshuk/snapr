@@ -1,0 +1,11 @@
+{
+  "error.job_not_found": "Задача не найдена",
+  "error.job_already_running": "Задача уже выполняется",
+  "error.job_cancel_failed": "Не удалось отменить задачу",
+  "error.backups_retrieval": "Ошибка получения резервных копий",
+  "error.backup_not_found": "Файл резервной копии не найден",
+  "error.invalid_credentials": "Неверное имя пользователя или пароль",
+  "error.unauthorized": "Не авторизован",
+  "error.manual_run_disabled": "Ручной запуск задач отключен",
+  "error.download_disabled": "Скачивание резервных копий отключено"
+}

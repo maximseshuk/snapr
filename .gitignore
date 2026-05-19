@@ -1,0 +1,53 @@
+# go
+/bin/
+*.test
+coverage.out
+coverage.html
+
+# node
+node_modules/
+.pnpm-debug.log*
+
+# build artifacts
+dist/
+web/dist/
+docs/doc_build/
+
+# generated changelog (CI builds it on release)
+CHANGELOG.md
+
+# env
+.env
+.env.*
+!.env.example
+
+# editors
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# claude / agent tooling
+.claude/settings.local.json
+.agents/
+
+# os
+.DS_Store
+Thumbs.db
+
+# logs / tmp
+*.log
+logs/
+*.tmp
+tmp/
+
+# runtime backups
+examples/*/backups/
+backups/
+*.tar.gz
+*.zip
+
+# local overrides
+*.local.yaml
+*.local.yml
+docker-compose.override.yml

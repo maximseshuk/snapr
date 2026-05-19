@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  go:
+    name: Go lint, test, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Verify modules
+        run: go mod verify
+
+      - name: Format check
+        run: gofmt -l . | tee /dev/stderr | (! read)
+
+      - name: Lint
+        run: |
+          go vet ./...
+          go tool golangci-lint run ./...
+
+      - name: Test
+        run: go test -race -timeout 5m ./...
+
+      - name: Build
+        run: go build -o /tmp/snapr ./cmd/snapr
+
+  web:
+    name: Web lint, format, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 10
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm run lint:web
+
+      - name: Format check
+        run: pnpm run format:web:check
+
+      - name: Build
+        run: pnpm run build

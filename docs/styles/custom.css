@@ -1,0 +1,106 @@
+@import '@fontsource-variable/geist';
+@import '@fontsource-variable/geist-mono';
+
+:root {
+  --rp-font-family-base:
+    'Geist Variable', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --rp-font-family-code: 'Geist Mono Variable', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  --rp-c-brand: oklch(0.32 0.02 160);
+  --rp-c-brand-light: oklch(0.42 0.03 160);
+  --rp-c-brand-lighter: oklch(0.55 0.04 160);
+  --rp-c-brand-dark: oklch(0.26 0.018 160);
+  --rp-c-brand-darker: oklch(0.2 0.014 160);
+  --rp-c-brand-tint: oklch(0.93 0.025 165);
+
+  --rp-c-bg: oklch(1 0 0);
+  --rp-c-bg-soft: oklch(0.97 0.008 160);
+  --rp-c-bg-mute: oklch(0.965 0.01 160);
+  --rp-c-bg-alt: oklch(0.96 0.012 160);
+
+  --rp-c-text-1: oklch(0.22 0.012 160);
+  --rp-c-text-2: oklch(0.5 0.012 160);
+  --rp-c-text-3: oklch(0.6 0.012 160);
+  --rp-c-text-code: oklch(0.32 0.04 165);
+
+  --rp-c-divider: oklch(0.9 0.013 160);
+  --rp-c-divider-light: oklch(0.93 0.012 160);
+  --rp-c-gutter: oklch(0.93 0.012 160);
+
+  --rp-code-bg: oklch(0.97 0.008 160);
+  --rp-code-line-height: 1.6;
+  --rp-code-font-size: 0.875rem;
+
+  --rp-layout-max-width: 1440px;
+  --rp-sidebar-width: 272px;
+  --rp-aside-width: 256px;
+
+  --rp-radius: 0.625rem;
+
+  --rp-sidebar-active-bg: oklch(0.32 0.02 160);
+  --rp-sidebar-active-fg: oklch(0.985 0.004 160);
+}
+
+.dark {
+  --rp-c-brand: oklch(0.85 0.025 160);
+  --rp-c-brand-light: oklch(0.9 0.03 160);
+  --rp-c-brand-lighter: oklch(0.94 0.035 160);
+  --rp-c-brand-dark: oklch(0.78 0.025 160);
+  --rp-c-brand-darker: oklch(0.7 0.025 160);
+  --rp-c-brand-tint: oklch(0.3 0.025 165);
+
+  --rp-c-bg: oklch(0.18 0.012 160);
+  --rp-c-bg-soft: oklch(0.22 0.014 160);
+  --rp-c-bg-mute: oklch(0.26 0.012 160);
+  --rp-c-bg-alt: oklch(0.21 0.012 160);
+
+  --rp-c-text-1: oklch(0.96 0.004 160);
+  --rp-c-text-2: oklch(0.7 0.012 160);
+  --rp-c-text-3: oklch(0.6 0.012 160);
+  --rp-c-text-code: oklch(0.9 0.04 165);
+
+  --rp-c-divider: oklch(0.85 0.025 160 / 18%);
+  --rp-c-divider-light: oklch(0.85 0.025 160 / 12%);
+  --rp-c-gutter: oklch(0.85 0.025 160 / 12%);
+
+  --rp-code-bg: oklch(0.22 0.014 160);
+
+  --rp-sidebar-active-bg: oklch(0.85 0.025 160);
+  --rp-sidebar-active-fg: oklch(0.2 0.012 160);
+}
+
+html {
+  font-feature-settings: 'cv11', 'ss01', 'ss03';
+}
+
+.rp-home-hero-actions .rp-button,
+.rp-codeblock,
+.rp-doc-footer-nav-card,
+.rp-overview-group {
+  border-radius: var(--rp-radius);
+}
+
+.rp-sidebar-item--active,
+.rp-sidebar-item--active:hover {
+  background-color: var(--rp-sidebar-active-bg) !important;
+  color: var(--rp-sidebar-active-fg) !important;
+  font-weight: 600;
+}
+
+.rp-sidebar-item--active * {
+  color: var(--rp-sidebar-active-fg) !important;
+}
+
+.rp-sidebar-item--group-item.rp-sidebar-item--active .rp-sidebar-item__left:before {
+  display: none !important;
+}
+
+.rp-nav__title__logo {
+  min-width: 1.25rem !important;
+  margin-right: 0.5rem !important;
+}
+
+.rp-nav__title__logo-image {
+  height: 1.125rem !important;
+  width: auto !important;
+}

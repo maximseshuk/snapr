@@ -1,0 +1,91 @@
+name: Bug Report
+description: Something is broken or works in an unexpected way
+title: '[Bug]: '
+labels: ['bug', 'needs-triage']
+assignees: []
+
+body:
+  - type: checkboxes
+    id: prerequisites
+    attributes:
+      label: Before you start
+      options:
+        - label: I searched the issues and did not find a duplicate
+          required: true
+        - label: I read the [docs](https://snapr.seshuk.im/)
+          required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: What you expected, what you got, and how to make it happen again.
+      placeholder: |
+        What I expected:
+        What happened instead:
+        Steps to reproduce:
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: textarea
+    id: config
+    attributes:
+      label: Your snapr.yaml
+      description: |
+        Paste the part of your config that matters. Hide passwords and keys — use `env:VAR` or `***`.
+      placeholder: |
+        jobs:
+          - name: my-job
+            schedule: '0 2 * * *'
+            sources:
+              - type: postgresql
+                host: db.example.com
+                ...
+            storages:
+              - name: s3
+                type: s3
+                bucket: backups
+                ...
+      render: yaml
+    validations:
+      required: true
+
+  - type: dropdown
+    id: install-method
+    attributes:
+      label: How did you install snapr?
+      options:
+        - Docker (ghcr.io/maximseshuk/snapr)
+        - Binary from Releases
+        - Built from source
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: versions
+    attributes:
+      label: Versions
+      description: |
+        Tell us the snapr version, your OS, and the dump tool versions (if relevant).
+        Please write exact versions, not "latest".
+      placeholder: |
+        snapr: 0.1.0
+        OS: Ubuntu 24.04 / macOS 14.5 / Docker on Synology
+        pg_dump: 16.3
+        Storage: S3 (MinIO) / SFTP / WebDAV / Bunny
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: |
+        Paste the error output. Job logs are at `logs/jobs/<job>.log`, system logs at `logs/snapr.log`.
+        Remove any passwords before pasting.
+      render: shell
