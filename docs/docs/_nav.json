@@ -6,8 +6,7 @@
   },
   {
     "text": "API",
-    "link": "/api/",
-    "activeMatch": "^/api/"
+    "link": "/api"
   },
   {
     "text": "Releases",

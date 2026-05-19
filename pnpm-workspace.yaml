@@ -2,11 +2,6 @@ packages:
   - web
   - docs
 
-allowBuilds:
-  '@goreleaser/goreleaser': true
-  '@parcel/watcher': true
-  msw: true
-
 catalog:
   '@fontsource-variable/geist': ^5.2.9
   '@fontsource-variable/geist-mono': ^5.2.8
@@ -16,6 +11,11 @@ catalog:
   react: 19.2.6
   react-dom: 19.2.6
   typescript: ~6.0.3
+
+onlyBuiltDependencies:
+  - '@goreleaser/goreleaser'
+  - '@parcel/watcher'
+  - msw
 
 overrides:
   react: 19.2.6
