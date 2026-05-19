@@ -191,8 +191,7 @@ type JobConfigOutput struct {
 }
 
 type RunJobOutput struct {
-	Status int `header:"-"`
-	Body   struct {
+	Body struct {
 		Job       string `json:"job"`
 		StartedAt string `json:"startedAt" doc:"RFC3339"`
 	}

@@ -58,13 +58,22 @@ export const useLogStream = ({ streamUrl, initialFetch, deps, maxEntries }: Opti
       es = new EventSource(streamUrl, { withCredentials: true })
       es.addEventListener('message', (ev) => {
         if (typeof ev.data !== 'string' || ev.data.length === 0) return
+        let line: string
+        try {
+          const parsed = JSON.parse(ev.data) as { line?: string }
+          if (typeof parsed.line !== 'string') return
+          line = parsed.line
+        } catch {
+          line = ev.data
+        }
+        if (line === '') return
         const cap = maxEntries && maxEntries > 0 ? maxEntries : 0
         if (cap > 0 && entriesRef.current.length >= cap) {
           const trimmed = entriesRef.current.slice(entriesRef.current.length - cap + 1)
-          dispatch({ type: 'replace', entries: [...trimmed, ev.data] })
+          dispatch({ type: 'replace', entries: [...trimmed, line] })
           return
         }
-        dispatch({ type: 'append', line: ev.data })
+        dispatch({ type: 'append', line })
       })
       es.addEventListener('error', () => {})
     })()
