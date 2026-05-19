@@ -33,14 +33,20 @@ jobs:
           config: cliff.toml
           args: --latest --strip header --github-repo ${{ github.repository }}
         env:
-          OUTPUT: CHANGELOG.md
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Save changelog and reset git state
+        run: |
+          cat > "${RUNNER_TEMP}/CHANGELOG.md" <<'CLIFF_EOF'
+          ${{ steps.changelog.outputs.content }}
+          CLIFF_EOF
+          git clean -fd
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v7
         with:
           distribution: goreleaser
           version: '~> v2'
-          args: release --clean --release-notes CHANGELOG.md
+          args: release --clean --release-notes ${{ runner.temp }}/CHANGELOG.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
