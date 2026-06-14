@@ -11,6 +11,7 @@ import (
 	"sync"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/go-viper/mapstructure/v2"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 
@@ -254,53 +255,49 @@ func validateJob(sl validator.StructLevel) {
 	}
 }
 
-// resolveEnvRefs replaces "env:VAR" string values with os.Getenv("VAR") to keep secrets out of YAML.
-func resolveEnvRefs(v reflect.Value) error {
-	switch v.Kind() {
-	case reflect.Pointer, reflect.Interface:
-		if v.IsNil() {
-			return nil
-		}
-		return resolveEnvRefs(v.Elem())
-	case reflect.Struct:
-		for i := 0; i < v.NumField(); i++ {
-			if !v.Field(i).CanSet() {
-				continue
+// envRefHookFunc resolves "env:VAR" values at decode time, so env refs work for any field type, not just strings.
+func envRefHookFunc() mapstructure.DecodeHookFuncValue {
+	return func(from reflect.Value, _ reflect.Value) (any, error) {
+		switch from.Kind() {
+		case reflect.String:
+			return resolveEnvString(from.String())
+		case reflect.Map:
+			// maps (e.g. notifier headers) reach the hook whole; resolve string values.
+			out := make(map[string]any, from.Len())
+			for _, key := range from.MapKeys() {
+				val := from.MapIndex(key)
+				if val.Kind() == reflect.Interface {
+					val = val.Elem()
+				}
+				if val.Kind() == reflect.String {
+					resolved, err := resolveEnvString(val.String())
+					if err != nil {
+						return nil, err
+					}
+					out[key.String()] = resolved
+					continue
+				}
+				out[key.String()] = from.MapIndex(key).Interface()
 			}
-			if err := resolveEnvRefs(v.Field(i)); err != nil {
-				return err
-			}
-		}
-	case reflect.Slice, reflect.Array:
-		for i := 0; i < v.Len(); i++ {
-			if err := resolveEnvRefs(v.Index(i)); err != nil {
-				return err
-			}
-		}
-	case reflect.Map:
-		for _, key := range v.MapKeys() {
-			val := v.MapIndex(key)
-			if val.Kind() != reflect.String {
-				continue
-			}
-			resolved, err := resolveEnvString(val.String())
-			if err != nil {
-				return err
-			}
-			if resolved != val.String() {
-				v.SetMapIndex(key, reflect.ValueOf(resolved))
-			}
-		}
-	case reflect.String:
-		resolved, err := resolveEnvString(v.String())
-		if err != nil {
-			return err
-		}
-		if resolved != v.String() {
-			v.SetString(resolved)
+			return out, nil
+		default:
+			return from.Interface(), nil
 		}
 	}
-	return nil
+}
+
+// envRefDecoderOptions wires the env-ref hook into viper's decoder, with weak typing so resolved string values can decode into non-string fields.
+func envRefDecoderOptions() []viper.DecoderConfigOption {
+	return []viper.DecoderConfigOption{
+		viper.DecodeHook(mapstructure.ComposeDecodeHookFunc(
+			envRefHookFunc(),
+			mapstructure.StringToTimeDurationHookFunc(),
+			mapstructure.StringToSliceHookFunc(","),
+		)),
+		func(dc *mapstructure.DecoderConfig) {
+			dc.WeaklyTypedInput = true
+		},
+	}
 }
 
 func resolveEnvString(s string) (string, error) {
@@ -402,16 +399,11 @@ func Load(configFilePath string) (*Config, error) {
 	usedConfigFile := v.ConfigFileUsed()
 
 	var cfg Config
-	if err := v.Unmarshal(&cfg); err != nil {
+	if err := v.Unmarshal(&cfg, envRefDecoderOptions()...); err != nil {
 		logger.Error().Err(err).
 			Str("config_file", usedConfigFile).
 			Msg("Error parsing configuration file")
 		return nil, fmt.Errorf("error parsing configuration: %w", err)
-	}
-
-	if err := resolveEnvRefs(reflect.ValueOf(&cfg).Elem()); err != nil {
-		logger.Error().Err(err).Msg("Error resolving env references in configuration")
-		return nil, err
 	}
 
 	if err := getValidator().Struct(&cfg); err != nil {

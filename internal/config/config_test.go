@@ -3,7 +3,6 @@ package config
 import (
 	"os"
 	"path/filepath"
-	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -201,23 +200,68 @@ func TestResolveEnvString(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestResolveEnvRefs_NestedStructAndMap(t *testing.T) {
+func TestLoad_EnvRefsInNestedStructAndMap(t *testing.T) {
+	yaml := `
+jobs:
+  - name: db
+    schedule: "0 * * * *"
+    sources:
+      - type: local
+        path: /data
+    storages:
+      - name: s
+        type: local
+        path: /a
+    retention:
+      last: 1
+    encryption:
+      type: openssl
+      password: env:SNAPR_TEST_PWD
+    notifiers:
+      - type: webhook
+        url: https://example.com
+        headers:
+          Authorization: env:SNAPR_TEST_HDR
+`
 	t.Setenv("SNAPR_TEST_PWD", "p@ss")
 	t.Setenv("SNAPR_TEST_HDR", "Bearer x")
-
-	cfg := Config{
-		Jobs: []JobConfig{{
-			Encryption: &EncryptionConfig{Password: "env:SNAPR_TEST_PWD"},
-			Notifiers: []NotifierConfig{{
-				Type:    "webhook",
-				URL:     "https://example.com",
-				Headers: map[string]string{"Authorization": "env:SNAPR_TEST_HDR"},
-			}},
-		}},
-	}
-	require.NoError(t, resolveEnvRefs(reflect.ValueOf(&cfg).Elem()))
+	cfg, err := Load(writeConfig(t, yaml))
+	require.NoError(t, err)
 	assert.Equal(t, "p@ss", cfg.Jobs[0].Encryption.Password)
-	assert.Equal(t, "Bearer x", cfg.Jobs[0].Notifiers[0].Headers["Authorization"])
+	// viper lower-cases map keys, so the header lands under "authorization".
+	assert.Equal(t, "Bearer x", cfg.Jobs[0].Notifiers[0].Headers["authorization"])
+}
+
+// env: refs must resolve for non-string fields too (int, bool).
+func TestLoad_EnvRefsInTypedFields(t *testing.T) {
+	yaml := `
+server:
+  enabled: env:SNAPR_TEST_ENABLED
+jobs:
+  - name: db
+    schedule: "0 * * * *"
+    sources:
+      - type: postgresql
+        host: db
+        port: env:SNAPR_TEST_PORT
+        database: d
+        username: u
+        password: env:SNAPR_TEST_PG
+    storages:
+      - name: s
+        type: local
+        path: /a
+    retention:
+      last: 1
+`
+	t.Setenv("SNAPR_TEST_PORT", "6432")
+	t.Setenv("SNAPR_TEST_ENABLED", "false")
+	t.Setenv("SNAPR_TEST_PG", "secret")
+	cfg, err := Load(writeConfig(t, yaml))
+	require.NoError(t, err)
+	assert.Equal(t, 6432, cfg.Jobs[0].Sources[0].Port)
+	assert.Equal(t, "secret", cfg.Jobs[0].Sources[0].Password)
+	assert.False(t, cfg.Server.Enabled)
 }
 
 func TestLoad_FromEnvVarPath(t *testing.T) {
