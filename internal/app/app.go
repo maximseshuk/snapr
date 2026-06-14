@@ -161,7 +161,7 @@ func buildRouter(manager *backup.Manager, sinks *logger.FileSinks, version strin
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)
-	r.Use(middleware.RealIP)
+	r.Use(middleware.ClientIPFromXFFTrustedProxies(1))
 	r.Use(middleware.Recoverer)
 	r.Use(httpLogger(apiLogger))
 
@@ -204,12 +204,17 @@ func httpLogger(lg zerolog.Logger) func(http.Handler) http.Handler {
 			ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
 			next.ServeHTTP(ww, r)
 
+			clientIP := middleware.GetClientIP(r.Context())
+			if clientIP == "" {
+				clientIP = r.RemoteAddr
+			}
+
 			lg.Info().
 				Str("method", r.Method).
 				Str("path", r.URL.Path).
 				Int("status", ww.Status()).
 				Dur("latency", time.Since(start)).
-				Str("client_ip", r.RemoteAddr).
+				Str("client_ip", clientIP).
 				Str("user_agent", r.UserAgent()).
 				Msg("HTTP request")
 		})
