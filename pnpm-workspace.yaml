@@ -18,5 +18,5 @@ onlyBuiltDependencies:
   - msw
 
 overrides:
-  react: 19.2.6
-  react-dom: 19.2.6
+  react: 19.2.7
+  react-dom: 19.2.7
