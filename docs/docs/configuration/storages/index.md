@@ -40,6 +40,26 @@ This layout is the same on every backend (Local, S3, SFTP, WebDAV, Bunny). It le
 
 Split snapshots get an extra wrapper directory; see [Splitter](../splitter.md).
 
+### Skipping the per-job subdirectory
+
+Set `includeJobName: false` on a storage to drop the `<job-name>/` level and write snapshots directly under `path`:
+
+```yaml
+storages:
+  - name: offsite
+    type: s3
+    bucket: backups
+    path: db
+    includeJobName: false
+```
+
+```
+db/
+  myjob-20260509-030000.tar.gz
+```
+
+`includeJobName` is optional and defaults to `true`, so existing configs keep the per-job subdirectory. It is supported by every backend. Only set it to `false` when a single job owns the `path` — sharing one `path` across jobs without the per-job level mixes their snapshots together.
+
 ## Listing cache
 
 The backups list returned to the UI is cached per `(job, storage)` pair for **5 minutes**. snapr invalidates the cache immediately after every upload, delete, and retention sweep, so changes made by snapr itself are visible right away. Files placed or removed manually (outside of snapr) appear up to 5 minutes later.

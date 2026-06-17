@@ -4,11 +4,12 @@
 
 ## Fields
 
-| Field  | Type    | Required | Notes                             |
-| ------ | ------- | -------- | --------------------------------- |
-| `type` | `local` | yes      |                                   |
-| `name` | string  | yes      | identifier; unique within the job |
-| `path` | string  | yes      | absolute path; must be writable   |
+| Field            | Type    | Required | Notes                                                                                                           |
+| ---------------- | ------- | -------- | --------------------------------------------------------------------------------------------------------------- |
+| `type`           | `local` | yes      |                                                                                                                 |
+| `name`           | string  | yes      | identifier; unique within the job                                                                               |
+| `path`           | string  | yes      | absolute path; must be writable                                                                                 |
+| `includeJobName` | bool    | no       | append the job name under `path` (default `true`); see [Storages](./index.md#skipping-the-per-job-subdirectory) |
 
 ## Example
 

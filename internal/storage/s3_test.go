@@ -22,6 +22,10 @@ func TestS3_JobPrefix(t *testing.T) {
 		{"plain path", pkgconfig.StorageConfig{Path: "backups"}, "myjob", "backups/myjob/"},
 		{"path with trailing slash", pkgconfig.StorageConfig{Path: "backups/"}, "myjob", "backups/myjob/"},
 		{"nested path", pkgconfig.StorageConfig{Path: "a/b/c"}, "myjob", "a/b/c/myjob/"},
+		{"includeJobName true is default", pkgconfig.StorageConfig{Path: "backups", IncludeJobName: boolPtr(true)}, "myjob", "backups/myjob/"},
+		{"includeJobName false with path", pkgconfig.StorageConfig{Path: "backups", IncludeJobName: boolPtr(false)}, "myjob", "backups/"},
+		{"includeJobName false nested", pkgconfig.StorageConfig{Path: "a/b", IncludeJobName: boolPtr(false)}, "myjob", "a/b/"},
+		{"includeJobName false no path", pkgconfig.StorageConfig{IncludeJobName: boolPtr(false)}, "myjob", ""},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
@@ -65,3 +69,5 @@ func TestS3_ParseStorageClass(t *testing.T) {
 		})
 	}
 }
+
+func boolPtr(b bool) *bool { return &b }

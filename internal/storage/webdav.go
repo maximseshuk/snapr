@@ -23,7 +23,7 @@ func NewWebDAVStorage() *WebDAVStorage { return &WebDAVStorage{} }
 func (w *WebDAVStorage) GetType() string { return "webdav" }
 
 func (w *WebDAVStorage) jobDir(storage pkgconfig.StorageConfig, jobName string) string {
-	return path.Join(webdavDir(storage), jobName)
+	return path.Join(webdavDir(storage), jobNameSegment(storage.IncludeJobName, jobName))
 }
 
 func (w *WebDAVStorage) EnsureJobDir(ctx context.Context, job *pkgconfig.JobConfig, storage pkgconfig.StorageConfig) error {

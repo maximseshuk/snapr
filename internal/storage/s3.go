@@ -69,10 +69,17 @@ func (s *S3Storage) newClient(ctx context.Context, storage pkgconfig.StorageConf
 
 func (s *S3Storage) jobPrefix(storage pkgconfig.StorageConfig, jobName string) string {
 	base := strings.TrimSuffix(storage.Path, "/")
-	if base == "" {
-		return jobName + "/"
+	seg := jobNameSegment(storage.IncludeJobName, jobName)
+	switch {
+	case base == "" && seg == "":
+		return ""
+	case base == "":
+		return seg + "/"
+	case seg == "":
+		return base + "/"
+	default:
+		return base + "/" + seg + "/"
 	}
-	return base + "/" + jobName + "/"
 }
 
 func (s *S3Storage) EnsureJobDir(ctx context.Context, job *pkgconfig.JobConfig, storage pkgconfig.StorageConfig) error {

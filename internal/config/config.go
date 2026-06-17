@@ -141,6 +141,9 @@ type StorageConfig struct {
 
 	Path string `mapstructure:"path,omitempty" validate:"required_if=Type local"`
 
+	// IncludeJobName appends the job name as a sub-dir under Path. nil/true (default) keeps backward-compatible behaviour; false treats Path as the full prefix.
+	IncludeJobName *bool `mapstructure:"includeJobName,omitempty"`
+
 	Host          string `mapstructure:"host,omitempty" validate:"required_if=Type sftp"`
 	Port          int    `mapstructure:"port,omitempty" validate:"omitempty,min=1,max=65535"`
 	Username      string `mapstructure:"username,omitempty"`

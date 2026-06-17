@@ -4,14 +4,15 @@
 
 ## Fields
 
-| Field      | Type     | Required | Notes                             |
-| ---------- | -------- | -------- | --------------------------------- |
-| `type`     | `webdav` | yes      |                                   |
-| `name`     | string   | yes      | identifier; unique within the job |
-| `url`      | string   | yes      | base URL of the WebDAV endpoint   |
-| `username` | string   | no       |                                   |
-| `password` | string   | no       | use `env:`                        |
-| `path`     | string   | no       | sub-path inside the endpoint      |
+| Field            | Type     | Required | Notes                                                                                                          |
+| ---------------- | -------- | -------- | -------------------------------------------------------------------------------------------------------------- |
+| `type`           | `webdav` | yes      |                                                                                                                |
+| `name`           | string   | yes      | identifier; unique within the job                                                                              |
+| `url`            | string   | yes      | base URL of the WebDAV endpoint                                                                                |
+| `username`       | string   | no       |                                                                                                                |
+| `password`       | string   | no       | use `env:`                                                                                                     |
+| `path`           | string   | no       | sub-path inside the endpoint                                                                                   |
+| `includeJobName` | bool     | no       | append the job name under `path` (default `true`); see [Storages](index.md#skipping-the-per-job-subdirectory). |
 
 ## Example
 

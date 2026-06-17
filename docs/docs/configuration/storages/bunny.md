@@ -10,17 +10,18 @@
 
 ## Fields
 
-| Field                  | Type    | Required | Notes                                                                                                 |
-| ---------------------- | ------- | -------- | ----------------------------------------------------------------------------------------------------- |
-| `type`                 | `bunny` | yes      |                                                                                                       |
-| `name`                 | string  | yes      | identifier; unique within the job                                                                     |
-| `endpoint`             | string  | yes      | storage endpoint, e.g. `storage.bunnycdn.com` or a regional variant                                   |
-| `zoneName`             | string  | yes      | Storage Zone name                                                                                     |
-| `accessKey`            | string  | yes      | Storage Zone password / API key (use `env:`)                                                          |
-| `path`                 | string  | no       | sub-path inside the zone where archives are stored                                                    |
-| `pullZoneHostname`     | string  | no       | Pull Zone hostname. Required to enable signed direct downloads.                                       |
-| `pullZoneTokenAuthKey` | string  | no       | Pull Zone Advanced Token Authentication key (use `env:`). Required to enable signed direct downloads. |
-| `pullZoneTokenTTL`     | int     | no       | token lifetime in seconds. Default `3600`.                                                            |
+| Field                  | Type    | Required | Notes                                                                                                          |
+| ---------------------- | ------- | -------- | -------------------------------------------------------------------------------------------------------------- |
+| `type`                 | `bunny` | yes      |                                                                                                                |
+| `name`                 | string  | yes      | identifier; unique within the job                                                                              |
+| `endpoint`             | string  | yes      | storage endpoint, e.g. `storage.bunnycdn.com` or a regional variant                                            |
+| `zoneName`             | string  | yes      | Storage Zone name                                                                                              |
+| `accessKey`            | string  | yes      | Storage Zone password / API key (use `env:`)                                                                   |
+| `path`                 | string  | no       | sub-path inside the zone where archives are stored                                                             |
+| `includeJobName`       | bool    | no       | append the job name under `path` (default `true`); see [Storages](index.md#skipping-the-per-job-subdirectory). |
+| `pullZoneHostname`     | string  | no       | Pull Zone hostname. Required to enable signed direct downloads.                                                |
+| `pullZoneTokenAuthKey` | string  | no       | Pull Zone Advanced Token Authentication key (use `env:`). Required to enable signed direct downloads.          |
+| `pullZoneTokenTTL`     | int     | no       | token lifetime in seconds. Default `3600`.                                                                     |
 
 ## Example
 
