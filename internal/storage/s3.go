@@ -69,7 +69,7 @@ func (s *S3Storage) newClient(ctx context.Context, storage pkgconfig.StorageConf
 
 func (s *S3Storage) jobPrefix(storage pkgconfig.StorageConfig, jobName string) string {
 	base := strings.TrimSuffix(storage.Path, "/")
-	seg := jobNameSegment(storage.IncludeJobName, jobName)
+	seg := JobNameSegment(storage.IncludeJobName, jobName)
 	switch {
 	case base == "" && seg == "":
 		return ""

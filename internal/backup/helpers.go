@@ -126,19 +126,28 @@ func backupPath(storageConfig config.StorageConfig, jobName string, set *storage
 	if set.IsSplit && set.WrapperName != "" {
 		leaf = set.WrapperName
 	}
+	seg := storage.JobNameSegment(storageConfig.IncludeJobName, jobName)
 	switch storageConfig.Type {
 	case "local":
-		return filepath.Join(storageConfig.Path, jobName, leaf)
+		return filepath.Join(storageConfig.Path, seg, leaf)
 	case "s3":
-		parts := []string{}
-		if storageConfig.Path != "" {
-			parts = append(parts, strings.Trim(storageConfig.Path, "/"))
-		}
-		parts = append(parts, jobName, leaf)
-		return fmt.Sprintf("s3://%s/%s", storageConfig.Bucket, strings.Join(parts, "/"))
+		parts := joinNonEmpty(strings.Trim(storageConfig.Path, "/"), seg, leaf)
+		return fmt.Sprintf("s3://%s/%s", storageConfig.Bucket, parts)
 	default:
-		return jobName + "/" + leaf
+		return joinNonEmpty(seg, leaf)
 	}
+}
+
+// joinNonEmpty joins the non-empty segments with "/", skipping blanks so an
+// omitted job-name segment doesn't leave a doubled or leading slash.
+func joinNonEmpty(segments ...string) string {
+	out := make([]string, 0, len(segments))
+	for _, s := range segments {
+		if s != "" {
+			out = append(out, s)
+		}
+	}
+	return strings.Join(out, "/")
 }
 
 func (bm *Manager) GetJobLogInfo(jobName string) (*JobLog, error) {

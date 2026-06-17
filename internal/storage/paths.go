@@ -10,9 +10,9 @@ import (
 
 const splitWrapperMarker = ".parts-"
 
-// jobNameSegment returns the job-name path segment to append to a storage's
+// JobNameSegment returns the job-name path segment to append to a storage's
 // base path, honouring storage.IncludeJobName (nil/true → append, false → skip).
-func jobNameSegment(includeJobName *bool, jobName string) string {
+func JobNameSegment(includeJobName *bool, jobName string) string {
 	if includeJobName != nil && !*includeJobName {
 		return ""
 	}

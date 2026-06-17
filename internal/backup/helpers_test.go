@@ -115,6 +115,44 @@ func TestBackupPath(t *testing.T) {
 		)
 		assert.Equal(t, "job/file", got)
 	})
+
+	noJobName := false
+
+	t.Run("s3 includeJobName false drops job segment", func(t *testing.T) {
+		got := backupPath(
+			config.StorageConfig{Type: "s3", Bucket: "mybucket", Path: "video", IncludeJobName: &noJobName},
+			"video",
+			&storage.BackupSet{ID: "video-20260101.tar"},
+		)
+		assert.Equal(t, "s3://mybucket/video/video-20260101.tar", got)
+	})
+
+	t.Run("s3 includeJobName false no path", func(t *testing.T) {
+		got := backupPath(
+			config.StorageConfig{Type: "s3", Bucket: "b", IncludeJobName: &noJobName},
+			"j",
+			&storage.BackupSet{ID: "f"},
+		)
+		assert.Equal(t, "s3://b/f", got)
+	})
+
+	t.Run("local includeJobName false drops job segment", func(t *testing.T) {
+		got := backupPath(
+			config.StorageConfig{Type: "local", Path: "/srv/backups", IncludeJobName: &noJobName},
+			"myjob",
+			&storage.BackupSet{ID: "myjob-20260101.tar.gz"},
+		)
+		assert.Equal(t, "/srv/backups/myjob-20260101.tar.gz", got)
+	})
+
+	t.Run("fallback includeJobName false drops job segment", func(t *testing.T) {
+		got := backupPath(
+			config.StorageConfig{Type: "bunny", IncludeJobName: &noJobName},
+			"job",
+			&storage.BackupSet{ID: "file"},
+		)
+		assert.Equal(t, "file", got)
+	})
 }
 
 func TestFullDownloadSupported(t *testing.T) {

@@ -30,7 +30,7 @@ func (s *SFTPStorage) jobDir(storage pkgconfig.StorageConfig, jobName string) st
 	if base == "" {
 		base = "."
 	}
-	return path.Join(base, jobNameSegment(storage.IncludeJobName, jobName))
+	return path.Join(base, JobNameSegment(storage.IncludeJobName, jobName))
 }
 
 func (s *SFTPStorage) EnsureJobDir(ctx context.Context, job *pkgconfig.JobConfig, storage pkgconfig.StorageConfig) error {

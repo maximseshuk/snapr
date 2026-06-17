@@ -26,7 +26,7 @@ func (l *LocalStorage) GetType() string {
 }
 
 func (l *LocalStorage) EnsureJobDir(ctx context.Context, job *pkgconfig.JobConfig, storage pkgconfig.StorageConfig) error {
-	dir := JobDirLocal(storage.Path, jobNameSegment(storage.IncludeJobName, job.Name))
+	dir := JobDirLocal(storage.Path, JobNameSegment(storage.IncludeJobName, job.Name))
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return fmt.Errorf("create job dir %s: %w", dir, err)
 	}
@@ -37,7 +37,7 @@ func (l *LocalStorage) EnsureJobDir(ctx context.Context, job *pkgconfig.JobConfi
 func (l *LocalStorage) UploadInto(ctx context.Context, archivePath string, job *pkgconfig.JobConfig, wrapperRelDir string, storage pkgconfig.StorageConfig) error {
 	logger := zerolog.Ctx(ctx)
 
-	jobDir := JobDirLocal(storage.Path, jobNameSegment(storage.IncludeJobName, job.Name))
+	jobDir := JobDirLocal(storage.Path, JobNameSegment(storage.IncludeJobName, job.Name))
 	destDir := jobDir
 	if wrapperRelDir != "" {
 		destDir = filepath.Join(jobDir, wrapperRelDir)
@@ -105,7 +105,7 @@ func (l *LocalStorage) UploadInto(ctx context.Context, archivePath string, job *
 
 func (l *LocalStorage) ListFiles(ctx context.Context, job *pkgconfig.JobConfig, storage pkgconfig.StorageConfig) ([]FileInfo, error) {
 	logger := zerolog.Ctx(ctx)
-	dir := JobDirLocal(storage.Path, jobNameSegment(storage.IncludeJobName, job.Name))
+	dir := JobDirLocal(storage.Path, JobNameSegment(storage.IncludeJobName, job.Name))
 
 	entries, err := os.ReadDir(dir)
 	if errors.Is(err, fs.ErrNotExist) {
@@ -147,7 +147,7 @@ func (l *LocalStorage) ListFiles(ctx context.Context, job *pkgconfig.JobConfig, 
 }
 
 func (l *LocalStorage) ListWrapperParts(ctx context.Context, job *pkgconfig.JobConfig, wrapperName string, storage pkgconfig.StorageConfig) ([]FileInfo, error) {
-	dir := filepath.Join(JobDirLocal(storage.Path, jobNameSegment(storage.IncludeJobName, job.Name)), wrapperName)
+	dir := filepath.Join(JobDirLocal(storage.Path, JobNameSegment(storage.IncludeJobName, job.Name)), wrapperName)
 	entries, err := os.ReadDir(dir)
 	if errors.Is(err, fs.ErrNotExist) {
 		return []FileInfo{}, nil
@@ -174,7 +174,7 @@ func (l *LocalStorage) ListWrapperParts(ctx context.Context, job *pkgconfig.JobC
 }
 
 func (l *LocalStorage) DeleteFile(ctx context.Context, job *pkgconfig.JobConfig, fileName string, storage pkgconfig.StorageConfig) error {
-	filePath := filepath.Join(JobDirLocal(storage.Path, jobNameSegment(storage.IncludeJobName, job.Name)), fileName)
+	filePath := filepath.Join(JobDirLocal(storage.Path, JobNameSegment(storage.IncludeJobName, job.Name)), fileName)
 	if err := os.Remove(filePath); err != nil {
 		return fmt.Errorf("error removing file: %w", err)
 	}
@@ -183,7 +183,7 @@ func (l *LocalStorage) DeleteFile(ctx context.Context, job *pkgconfig.JobConfig,
 }
 
 func (l *LocalStorage) DeleteWrapper(ctx context.Context, job *pkgconfig.JobConfig, wrapperName string, storage pkgconfig.StorageConfig) error {
-	dir := filepath.Join(JobDirLocal(storage.Path, jobNameSegment(storage.IncludeJobName, job.Name)), wrapperName)
+	dir := filepath.Join(JobDirLocal(storage.Path, JobNameSegment(storage.IncludeJobName, job.Name)), wrapperName)
 	if err := os.RemoveAll(dir); err != nil {
 		return fmt.Errorf("remove wrapper %s: %w", dir, err)
 	}
@@ -192,7 +192,7 @@ func (l *LocalStorage) DeleteWrapper(ctx context.Context, job *pkgconfig.JobConf
 }
 
 func (l *LocalStorage) Download(ctx context.Context, job *pkgconfig.JobConfig, wrapperRelDir, fileName string, storage pkgconfig.StorageConfig) (*DownloadResult, error) {
-	dir := JobDirLocal(storage.Path, jobNameSegment(storage.IncludeJobName, job.Name))
+	dir := JobDirLocal(storage.Path, JobNameSegment(storage.IncludeJobName, job.Name))
 	if wrapperRelDir != "" {
 		dir = filepath.Join(dir, wrapperRelDir)
 	}

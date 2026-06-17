@@ -228,7 +228,7 @@ func (b *BunnyStorage) jobBaseURL(storage pkgconfig.StorageConfig, jobName strin
 	if storage.Path != "" {
 		parts = append(parts, strings.Trim(storage.Path, "/"))
 	}
-	if seg := jobNameSegment(storage.IncludeJobName, jobName); seg != "" {
+	if seg := JobNameSegment(storage.IncludeJobName, jobName); seg != "" {
 		parts = append(parts, seg)
 	}
 	return strings.Join(parts, "/")
@@ -255,7 +255,7 @@ func (b *BunnyStorage) signPullZoneURL(storage pkgconfig.StorageConfig, jobName,
 	if storage.Path != "" {
 		p += strings.Trim(storage.Path, "/") + "/"
 	}
-	if seg := jobNameSegment(storage.IncludeJobName, jobName); seg != "" {
+	if seg := JobNameSegment(storage.IncludeJobName, jobName); seg != "" {
 		p += seg + "/"
 	}
 	if wrapperRelDir != "" {
