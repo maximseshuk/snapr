@@ -13,7 +13,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
-	"github.com/aws/aws-sdk-go-v2/feature/s3/transfermanager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/rs/zerolog"
 
@@ -116,10 +115,9 @@ func (s *S3Source) Backup(ctx context.Context, destDir string, source config.Sou
 
 	logger.Info().Int("files_to_download", len(tasks)).Msg("Starting downloads")
 
-	tm := transfermanager.New(client)
 	workers := utils.WorkerCount(source.ExtraParams, 10, 50)
 
-	if err := s.downloadAll(ctx, tm, source.Bucket, tasks, workers); err != nil {
+	if err := s.downloadAll(ctx, client, source.Bucket, tasks, workers); err != nil {
 		return err
 	}
 
@@ -210,7 +208,7 @@ func (s *S3Source) collectTasks(ctx context.Context, client *s3.Client, bucket, 
 	return tasks, remoteKeys, nil
 }
 
-func (s *S3Source) downloadAll(ctx context.Context, tm *transfermanager.Client, bucket string, tasks []s3DownloadTask, workers int) error {
+func (s *S3Source) downloadAll(ctx context.Context, client *s3.Client, bucket string, tasks []s3DownloadTask, workers int) error {
 	logger := zerolog.Ctx(ctx)
 
 	taskChan := make(chan s3DownloadTask, len(tasks))
@@ -235,7 +233,7 @@ func (s *S3Source) downloadAll(ctx context.Context, tm *transfermanager.Client, 
 				default:
 				}
 
-				if err := s.downloadOne(ctx, tm, bucket, task); err != nil {
+				if err := s.downloadOne(ctx, client, bucket, task); err != nil {
 					mu.Lock()
 					failCount++
 					if firstErr == nil {
@@ -264,14 +262,17 @@ func (s *S3Source) downloadAll(ctx context.Context, tm *transfermanager.Client, 
 	return nil
 }
 
-func (s *S3Source) downloadOne(ctx context.Context, tm *transfermanager.Client, bucket string, task s3DownloadTask) error {
+func (s *S3Source) downloadOne(ctx context.Context, client *s3.Client, bucket string, task s3DownloadTask) error {
 	tempPath := task.localPath + ".tmp"
+	if err := os.MkdirAll(filepath.Dir(tempPath), 0755); err != nil {
+		return fmt.Errorf("error creating directory %s: %w", filepath.Dir(tempPath), err)
+	}
 	f, err := os.Create(tempPath)
 	if err != nil {
 		return fmt.Errorf("error creating temp file: %w", err)
 	}
 
-	out, err := tm.GetObject(ctx, &transfermanager.GetObjectInput{
+	out, err := client.GetObject(ctx, &s3.GetObjectInput{
 		Bucket: aws.String(bucket),
 		Key:    aws.String(task.key),
 	})
