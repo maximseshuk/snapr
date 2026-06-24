@@ -58,6 +58,12 @@ jobs:
         database: 'testdb'
         excludeTables:
           - 'temp_table'
+        extraParams:
+          clean: ''
+          if-exists: ''
+          no-acl: ''
+          no-owner: ''
+          schema: 'public'
     storages:
       - name: 'local-disk'
         type: 'local'
