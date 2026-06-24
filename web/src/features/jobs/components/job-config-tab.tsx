@@ -16,11 +16,6 @@ interface JobConfigTabProps {
 const isPresentValue = (value: unknown) =>
   value !== undefined && value !== '' && value !== null && (!Array.isArray(value) || value.length > 0)
 
-const isPlainObject = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null && !Array.isArray(value)
-
-// Render a key/value record (e.g. pg_dump extraParams) as readable flags:
-// an empty value is a bare flag (--clean), otherwise --key=value.
 const formatFlag = (key: string, value: unknown) =>
   value === '' || value === null || value === undefined ? `--${key}` : `--${key}=${String(value)}`
 
@@ -46,7 +41,7 @@ const FieldRows = ({ data, excludeKeys, t }: { data: object; excludeKeys: string
         .filter(([key, value]) => !excludeKeys.includes(key) && isPresentValue(value))
         .map(([key, value]) => (
           <FieldRow key={key} label={translateFieldName(key, t)}>
-            {isPlainObject(value) ? (
+            {key === 'extraParams' && typeof value === 'object' && value !== null ? (
               <div className="flex flex-wrap gap-1.5">
                 {Object.entries(value).map(([flagKey, flagValue]) => (
                   <Badge key={flagKey} variant="secondary" className="font-mono font-normal">
