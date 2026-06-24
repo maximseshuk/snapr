@@ -51,7 +51,6 @@ RUN apk --no-cache add \
     ca-certificates \
     tzdata \
     tar \
-    postgresql-client \
     mariadb-client \
     mongodb-tools \
     redis \
@@ -62,6 +61,9 @@ RUN apk --no-cache add \
     pigz \
     zstd \
     xz \
+    && apk --no-cache add \
+    --repository=https://dl-cdn.alpinelinux.org/alpine/edge/main \
+    postgresql18-client \
     && addgroup -g 1001 -S snapr \
     && adduser -u 1001 -S snapr -G snapr \
     && mkdir -p /app/data /app/logs \
